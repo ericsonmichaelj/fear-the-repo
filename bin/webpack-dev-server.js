@@ -28,7 +28,7 @@ devServer.app.post('/login',function(req,res){
  It is currently being called only in this file..
 */
 
-// dbSchema.buildATestUser();
+dbSchema.buildATestUser();
 
 
 devServer.listen(port, host, function () {
