@@ -176,11 +176,11 @@ class ResumeView extends React.Component {
 
     return connectDropTarget(
       <div className='container'
-           style={styles.container}
-           id='resumeContainer'>
+           style={styles.container}>
 
         <div className='marginTop'
              style={styles.marginTop} />
+        <div id= 'Resume'>     
         <Paper>
           <ResumeHeader {...this.props}
                         styles={styles}
@@ -209,7 +209,7 @@ class ResumeView extends React.Component {
           <div className='marginBottom'
                style={styles.marginBottom} />
         </Paper>
-
+        </div>
         <ResumeSavePrint {...this.props}
                          styles={styles}
                          handleUpdateLocalState={this.handleUpdateLocalState}
@@ -313,7 +313,7 @@ class ResumeSavePrint extends React.Component {
   }
 
   handlePrint() {
-    const prtContent = document.getElementById('resumeContainer');
+    const prtContent = document.getElementById('Resume');
     const WinPrint = window.open('', '', 'left=0,top=0,width=800,height=900,toolbar=0,scrollbars=0,status=0');
     WinPrint.document.write(prtContent.innerHTML + '<style>div {  border-radius: 0px !important; box-shadow: none !important; }</style>');
     WinPrint.document.close();
@@ -321,6 +321,20 @@ class ResumeSavePrint extends React.Component {
     WinPrint.print();
     WinPrint.close();
   }
+
+handleExport() {
+  console.log('I\m hit')
+  const prtContent = { resume: document.getElementById('Resume') };
+  fetch('http://localhost:3000/api/resume/export', {
+      method: 'post',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(prtContent)
+    })
+    .then(response => console.log(response))
+}
 
   handleChangeTheme(event, index) {
     const userInput = event.target.value;
@@ -348,6 +362,9 @@ class ResumeSavePrint extends React.Component {
 
           <RaisedButton label='Save Resume'
                         onClick={e => this.handleSubmit(e)} />
+          <span> </span>                        
+           <RaisedButton label='Export Resume'
+                        onClick={e => this.handleExport(e)} />                       
           <span> </span>
           <RaisedButton label='Print Resume'
                         onClick={e => this.handlePrint(e)} />

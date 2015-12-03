@@ -11,6 +11,7 @@ const session = require('express-session');
 const utils = require('./lib/utils');
 const bcrypt = require('bcrypt-nodejs')
 const Promise = require('bluebird');
+const clientPDF = require('./lib/PDFClient.js');
 
 devServer.listen(port, host, () => {
   console.log(chalk.green(
@@ -100,6 +101,21 @@ devServer.app.post('/logout', (req, res) => {
     }
   });
 });
+
+
+/////////////////////////////////////////////////////////////////
+//                                                             //
+//  Exporting resume                                           //
+//                                                             //
+/////////////////////////////////////////////////////////////////
+
+devServer.app.post('/api/resume/export', (req,res) => {
+  console.log(res.body);
+  clientPDF.convertHtml(res.body, function(response){
+    console.log(response);
+  });
+  res.send();
+})
 
 
 /////////////////////////////////////////////////////////////////

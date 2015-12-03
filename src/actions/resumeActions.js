@@ -66,6 +66,11 @@ export function updateResumeState (payload) { // rename to "serverupdate"
   };
 }
 
+export function exportResumeToServerAsync(resumeHTML) {
+  
+}
+
+
 
 export function sendResumeToServerAsync(sentResumeObj) {
   // Thunk middleware knows how to handle functions.
