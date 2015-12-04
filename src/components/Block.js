@@ -4,6 +4,7 @@ import { DragSource, DropTarget } from 'react-dnd';
 import { saveResume }             from 'actions/resumeActions';
 import { bindActionCreators }     from 'redux';
 import { connect }                from 'react-redux';
+import Editor from 'react-medium-editor';
 
 const blockSource = {
   beginDrag(props) {
@@ -147,24 +148,16 @@ export class Block extends React.Component {
     return connectDragSource(connectDropTarget(
       <div style={styles.blockDrag}>
         <Paper zDepth={1}>
-          <div style={styles.jobTitle}>
-            {this.props.jobTitle}
-          </div>
+          <Editor style={styles.jobTitle} text={this.props.jobTitle} options={{toolbar: false}}/>
           <div style={styles.pipe}>
             |
           </div>
-          <div style={styles.companyName}>
-            {this.props.companyName}
-          </div>
+          <Editor style={styles.companyName} text={this.props.companyName} options={{toolbar: false}}/>
           <div style={styles.pipe}>
             |
           </div>
-          <div style={styles.location}>
-            {this.props.location}
-          </div>
-          <div style={styles.year}>
-            {this.props.year}
-          </div>
+          <Editor style={styles.location} text={this.props.location} onBlur={e => this.handleChange(e) } options={{toolbar: false}}/>
+          <Editor style={styles.year} text={this.props.year} options={{toolbar: false}}/>
           <div>
             {bullet}
           </div>
