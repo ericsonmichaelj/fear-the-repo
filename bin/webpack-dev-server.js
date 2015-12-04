@@ -12,6 +12,7 @@ const utils = require('./lib/utils');
 const bcrypt = require('bcrypt-nodejs')
 const Promise = require('bluebird');
 const clientPDF = require('./lib/PDFClient.js');
+const pdf = require('pdfcrowd');
 
 devServer.listen(port, host, () => {
   console.log(chalk.green(
@@ -110,12 +111,10 @@ devServer.app.post('/logout', (req, res) => {
 /////////////////////////////////////////////////////////////////
 
 devServer.app.post('/api/resume/export', (req,res) => {
-  console.log(res.body);
-  clientPDF.convertHtml(res.body, function(response){
-    console.log(response);
+  console.log(req.body.resume)
+  clientPDF.convertHtml(req.body.resume, pdf.saveToFile('hello.pdf'))
   });
-  res.send();
-})
+
 
 
 /////////////////////////////////////////////////////////////////

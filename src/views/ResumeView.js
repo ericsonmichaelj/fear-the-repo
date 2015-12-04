@@ -11,6 +11,7 @@ import { styles } from 'styles/ResumeViewStyles';
 import { resumeThemes } from 'styles/resumeThemes';
 import { RaisedButton, TextField, Paper, SelectField } from 'material-ui/lib';
 import injectTapEventPlugin from 'react-tap-event-plugin';
+import $ from 'jQuery'
 injectTapEventPlugin(); // this is some voodoo to make SelectField render correctly
 
 const ActionCreators = {
@@ -324,11 +325,11 @@ class ResumeSavePrint extends React.Component {
 
 handleExport() {
   console.log('I\m hit')
-  const prtContent = { resume: document.getElementById('Resume') };
+  const prtContent = { resume: document.getElementById('Resume').innerHTML };
+  console.log(JSON.stringify(prtContent));
   fetch('http://localhost:3000/api/resume/export', {
       method: 'post',
       headers: {
-        'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(prtContent)
