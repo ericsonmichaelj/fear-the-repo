@@ -9,16 +9,55 @@ export default class ResumeHeader extends React.Component {
   }
 
   render() {
+
     return (
       <div>
-        <Paper zDepth={1}>
-          <Editor style={this.props.styles.name} text='Your name here' options={{toolbar: false}}/>
-          <Editor style={this.props.styles.email} text='email@website.com'options={{toolbar: false}}/>
-          <Editor style={this.props.styles.phone} text='123-456-7890' options={{toolbar: false}}/>
-          <Editor style={this.props.styles.city} text='San Francisco, CA' options={{toolbar: false}}/>
-          <Editor style={this.props.styles.url} text='linkedin.com/michaeljordan' options={{toolbar: false}}/>
-          <Editor style={this.props.styles.url} text='github.com/number23' options={{toolbar: false}}/>
-        </Paper>
+        <div style={this.props.styles.firstLine}>
+          <div style={this.props.styles.location}>
+
+            <Editor style={this.props.styles.city}
+            text={this.props.resumeState.resumeHeader.city}
+            options={{toolbar: false}}
+            onBlur={e => this.props.handleUpdateLocalState(e, 'city', 'header')} />
+
+            <Editor style={this.props.styles.state}
+            text={this.props.resumeState.resumeHeader.state}            
+            options={{toolbar: false}}
+            onBlur={e => this.props.handleUpdateLocalState(e, 'state', 'header')} />
+          </div>
+
+          <Editor style={this.props.styles.name}
+          text={this.props.resumeState.resumeHeader.name}
+          options={{toolbar: false}}/> 
+
+        </div> 
+
+        <Editor style={this.props.styles.profession}
+          options={{toolbar: false}}
+          text={this.props.resumeState.resumeHeader.profession}
+          onBlur={e => this.props.handleUpdateLocalState(e, 'profession', 'header')} />
+
+          <Editor style={this.props.styles.email} 
+          options={{toolbar: false}}
+          text={this.props.resumeState.resumeHeader.email}
+          onBlur={e => this.props.handleUpdateLocalState(e, 'email', 'header')} />
+
+
+          <Editor style={this.props.styles.phone} 
+          options={{toolbar: false}}
+          text={this.props.resumeState.resumeHeader.phone}
+          onBlur={e => this.props.handleUpdateLocalState(e, 'phone', 'header')} />
+
+
+          <Editor style={this.props.styles.url} 
+          options={{toolbar: false}}
+          text={this.props.resumeState.resumeHeader.url}
+          onBlur={e => this.props.handleUpdateLocalState(e, 'webLinkedin', 'header')} />
+
+
+          <Editor style={this.props.styles.url} 
+           options={{toolbar: false}}
+           onBlur={e => this.props.handleUpdateLocalState(e, 'webOther', 'footer')} />
       </div>
     );
   }

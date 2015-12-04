@@ -148,7 +148,7 @@ export class Block extends React.Component {
     return connectDragSource(connectDropTarget(
       <div style={styles.blockDrag}>
         <Paper zDepth={1}>
-          <Editor style={styles.jobTitle} text={this.props.jobTitle} options={{toolbar: false}}/>
+          <div style={styles.jobTitle} {this.props.jobTitle} options={{toolbar: false}}/>
           <div style={styles.pipe}>
             |
           </div>
