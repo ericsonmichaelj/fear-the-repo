@@ -5,7 +5,7 @@ const historyApiFallback = require('connect-history-api-fallback');
 const express = require('express')
 const parser = require('body-parser');
 const config = require('../config');
-const session = require('express-session');
+// const session = require('express-session');
 const utils = require('./lib/utils');
 const bcrypt = require('bcrypt-nodejs')
 const Promise = require('bluebird');
@@ -27,11 +27,11 @@ const app = express();
 
 app.use(parser.json());
 
-app.use(session({
-  secret: "Backend is fun because I don't have to deal with React",
-  resave: false,
-  saveUninitialized: true
-}));
+// app.use(session({
+//   secret: "Backend is fun because I don't have to deal with React",
+//   resave: false,
+//   saveUninitialized: true
+// }));
 
 app.use(historyApiFallback({
   verbose : false
