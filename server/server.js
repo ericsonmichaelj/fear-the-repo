@@ -1,6 +1,6 @@
 
 // connect to database.
-const dbSchema = require('../database/dbSchema.js');
+// const dbSchema = require('../database/dbSchema.js');
 const historyApiFallback = require('connect-history-api-fallback');
 const express = require('express')
 const parser = require('body-parser');
@@ -9,7 +9,7 @@ const session = require('express-session');
 const utils = require('./lib/utils');
 const bcrypt = require('bcrypt-nodejs')
 const Promise = require('bluebird');
-const db = require('../database/dbConfig.js');
+// const db = require('../database/dbConfig.js');
 const _ = require('underscore');
 const app = express();
 ////////////////////////////////////////////////////////////////////////
