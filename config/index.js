@@ -32,6 +32,18 @@ const config = {
   compiler_vendor          : [
     'history',
     'react',
+    'react-dnd',
+    'react-medium-editor'
+    'radium'
+    'material-ui'
+    'react-dnd-html-backend',
+    'jQuery',
+    'underscore',
+    'react-router',
+    'immutable',
+    'underscore',
+    'redux-thunk',
+    'react-dom',
     'react-redux',
     'react-router',
     'redux',
