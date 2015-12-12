@@ -4,6 +4,7 @@ import { Paper } from 'material-ui/lib';
 import Editor from 'react-medium-editor';
 import Radium from 'radium';
 
+
 const Types = {
   BULLET: 'bullet',
   BLOCK: 'block'
@@ -93,6 +94,7 @@ export default class Bullet extends React.Component {
     isDragging: PropTypes.bool.isRequired,
     moveBullet: PropTypes.func.isRequired,
     parentBlockId: PropTypes.any.isRequired,
+    styles: PropTypes.object,
     text: PropTypes.string.isRequired
   };
 
@@ -101,49 +103,45 @@ export default class Bullet extends React.Component {
   }
 
   render() {
-    const { connectDragSource,
+    const { bulletId,
+            connectDragSource,
             connectDropTarget,
-            isDragging } = this.props;
+            isDragging,
+            parentBlockId,
+            styles } = this.props;
 
-    const styles = {
-      bulletDrag: {
-        opacity: isDragging ? 0 : 1,
-        cursor: 'default',
-        width: '100%',
-        ':hover': {}
-      },
-      textField: {  // FIXME: this should live in the styles file. BulletDrag is only in here because it uses the 'isDragging' property.
-        width: '190%',
-        cursor: 'text',
-      },
-      editorField: {
-        cursor: 'text',
-        maxWidth: '90%',
-        minWidth: '80%',
-        display: 'inline-block'
-      },
-      handle: {
-        cursor: 'move',
-        float: 'right',
+    const bulletDrag = {
+      opacity: isDragging ? 0 : 1,
+      cursor: 'default',
+      width: '100%',
+      ':hover': {
+        boxSizing: 'border-box',
+        WebkitTapHighlightColor: 'rgba(0,0,0,0)',
+        boxShadow: '0 1px 6px rgba(0, 0, 0, 0.12), 0 1px 4px rgba(0, 0, 0, 0.24)'
       }
     };
 
     return connectDragSource(connectDropTarget(
-      <div style={styles.bulletDrag} key='bullet'>
+      <div style={bulletDrag} key='bullet'>
+
+      {Radium.getState(this.state, 'bullet', ':hover')}
 
         <Editor style={styles.editorField}
-          text={this.props.text}
-          options={{toolbar: false}}
-          onBlur={e => this.props.handleUpdateLocalState(e, 'text', 'bullets', this.props.bulletId, this.props.parentBlockId)} />
+                text={this.props.text || '[new bullet point]'}
+                options={{ toolbar: false }}
+                onBlur={e => this.props.handleUpdateLocalState(e, 'text', 'bullets', bulletId, parentBlockId)} />
 
-        <img src={require('styles/assets/ic_remove_circle_outline_black_24px.svg')}
-             onClick={e => this.hideBullet(e, this.props.bulletId)} />
+
+        {Radium.getState(this.state, 'bullet', ':hover') ? (
+          <img src={require('styles/assets/ic_remove_circle_outline_black_24px.svg')}
+                 onClick={e => this.hideBullet(e, bulletId)} />
+            ) : null}
 
         {Radium.getState(this.state, 'bullet', ':hover') ? (
           <img src={require('styles/assets/drag-vertical.png')} style={styles.handle} />
-          ) : null}
-
+            ) : null}
       </div>
+
     ));
   }
-}
+};

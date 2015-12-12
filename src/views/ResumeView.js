@@ -14,10 +14,12 @@ import { addBlock,
          addBullet,
          clientIsDirtyUpdate,
          getResumeFromServerDBAsync,
+         getThesaurusResultsAsync,
          hideBlock,
          hideBullet,
          moveBlock,
          moveBullet,
+         populateDataFromLinkedIn,
          sendResumeToServerAsync,
          serverIsSavingUpdate,
          updateLocalState,
@@ -27,12 +29,18 @@ import { addBlock,
          updateLocalStateHeader,
          updateLocalStateSavePrint,
          updateResumeState,
-         updateResumeWithServerResponse } from 'actions/resumeActions';
+         updateResumeWithServerResponse,
+         wordSearch } from 'actions/resumeActions';
+import { disableSubmit,
+         displayErrorMessage,
+         enableSubmit,
+         hideErrorMessage,
+         updateErrorMessage } from 'actions/validationActions';
 
 // Styling
 import { styles } from 'styles/ResumeViewStyles';
 import { resumeThemes } from 'styles/resumeThemes';
-import { Paper } from 'material-ui/lib';
+import { Paper, LeftNav, IconButton, IconMenu, MoreVertIcon, MenuItem, FlatButton } from 'material-ui/lib';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 injectTapEventPlugin(); // this is some voodoo to make SelectField render correctly,
                         // check the issues on their repo for more information
@@ -42,13 +50,20 @@ const ActionCreators = {
   addBlock,
   addBullet,
   clientIsDirtyUpdate,
+  disableSubmit,
+  displayErrorMessage,
+  enableSubmit,
   getResumeFromServerDBAsync,
+  getThesaurusResultsAsync,
   hideBlock,
   hideBullet,
+  hideErrorMessage,
   moveBlock,
   moveBullet,
+  populateDataFromLinkedIn,
   sendResumeToServerAsync,
   serverIsSavingUpdate,
+  updateErrorMessage,
   updateLocalState,
   updateLocalStateBlocks,
   updateLocalStateBullets,
@@ -56,15 +71,19 @@ const ActionCreators = {
   updateLocalStateHeader,
   updateLocalStateSavePrint,
   updateResumeState,
-  updateResumeWithServerResponse
+  updateResumeWithServerResponse,
+  wordSearch
 };
 
 const mapStateToProps = (state) => ({
-  currentTheme: state.resumeReducer.resumeTheme, // TODO: maybe should be currentTheme
+  canSubmitResume: state.validationReducer.canSubmitResume,
+  currentErrorMessage: state.validationReducer.currentErrorMessage,
+  currentTheme: state.resumeReducer.resumeTheme,
   loggedIn: state.titleBarReducer.loggedIn,
   resumeState: state.resumeReducer,
   routerState: state.router,
-  userID: state.titleBarReducer.userID || null // FIXME: this should be 'userId'
+  userID: state.titleBarReducer.userID || null,
+  resumeId: state.titleBarReducer.resumeId || null
 });
 const mapDispatchToProps = (dispatch) => ({
   actions: bindActionCreators(ActionCreators, dispatch)
@@ -94,6 +113,7 @@ class ResumeView extends React.Component {
   static propTypes = {
     actions: PropTypes.object,
     connectDropTarget: PropTypes.func.isRequired,
+    currentErrorMessage: PropTypes.string,
     loggedIn: PropTypes.bool,
     resumeState: PropTypes.object
   }
@@ -104,6 +124,16 @@ class ResumeView extends React.Component {
     this.findBlock = this.findBlock.bind(this);
     this.moveBullet = this.moveBullet.bind(this);
     this.findBullet = this.findBullet.bind(this);
+  }
+
+  state = {
+    validations: {
+      name: false,
+      email: false,
+      city: false,
+      // state: false,  // Using just one location field that includes City, ST will be much easier to format in resumeHeader. We can repurpose 'city' for that
+      phone: false
+    }
   }
 
   handleUpdateLocalState(event, textFieldName, whereFrom, id, parentBlockId) {
@@ -143,7 +173,7 @@ class ResumeView extends React.Component {
       this.actions.updateLocalStateFooter({textFieldName, userInput, whereFrom});
     } else if (whereFrom === 'savePrint') {
       console.log('updating from savePrint...');
-      this.actions.updateLocalStateSavePrint({textFieldName, userInput, whereFrom});
+      this.actions.updateLocalStateSavePrint({textFieldName, userInput: event.target.value, whereFrom});
     } else if (whereFrom === 'blocks') {
       console.log('updating from blocks...');
       this.actions.updateLocalStateBlocks({textFieldName, userInput, whereFrom, blockIndex});
@@ -213,35 +243,45 @@ class ResumeView extends React.Component {
     this.props.actions.addBlock(type);
   }
 
+
   render() {
+
     const { connectDropTarget } = this.props;
     const { blockChildren } = this.props.resumeState;
 
     return connectDropTarget(
+    <div>
       <div className='container'
-           style={styles.container}
-           id='resumeContainer'>
-
+           style={styles.container}>
+           <ResumeSavePrint {...this.props}
+                            styles={styles}
+                            validations={this.state.validations}
+                            handleUpdateLocalState={this.handleUpdateLocalState}
+                            handleSubmit={this.handleSubmit}
+                            handlePrint={this.handlePrint}
+                            handleChangeTheme={this.handleChangeTheme}
+                            handleUpdateLocalState={this.handleUpdateLocalState}
+                            handleSaveState={this.handleSaveState}
+                            getResumeFromServerDBAsync={this.getResumeFromServerDBAsyc}
+                            getThesaurusResultsAsync={this.getThesaurusResultsAsync}
+                            serverIsSavingUpdate={this.serverIsSavingUpdate}
+                            clientIsDirtyUpdate={this.clientIsDirtyUpdate} />
         <div className='marginTop'
              style={styles.marginTop} />
 
-        <ResumeSavePrint {...this.props}
-                         styles={styles}
-                         handleUpdateLocalState={this.handleUpdateLocalState}
-                         handleSubmit={this.handleSubmit}
-                         handlePrint={this.handlePrint}
-                         handleChangeTheme={this.handleChangeTheme}
-                         handleUpdateLocalState={this.handleUpdateLocalState}
-                         handleSaveState={this.handleSaveState}
-                         getResumeFromServerDBAsync={this.getResumeFromServerDBAsyc}
-                         serverIsSavingUpdate={this.serverIsSavingUpdate}
-                         clientIsDirtyUpdate={this.clientIsDirtyUpdate} />
 
-        <Paper style={styles.resumePaper}>
+        <Paper style={styles.resumePaper} id='resumeContainer'>
 
           <ResumeHeader {...this.props}
                         styles={styles}
+                        validations={this.state.validations}
                         resumeThemes={resumeThemes}
+                        name={this.props.name}
+                        city={this.props.city}
+                        displayEmail={this.props.displayEmail}
+                        phone={this.props.phone}
+                        webLinkedin={this.props.webLinkedin}
+                        webOther={this.props.webOther}
                         handleUpdateLocalState={this.handleUpdateLocalState} />
 
           {blockChildren.filter(block => block.archived === false)
@@ -268,6 +308,7 @@ class ResumeView extends React.Component {
                                                     return (
                                                       <Bullet {...this.props}
                                                               key={bullet.bulletId}
+                                                              styles={styles}
                                                               bulletId={bullet.bulletId}
                                                               parentBlockId={bullet.parentBlockId}
                                                               text={bullet.text}
@@ -297,18 +338,15 @@ class ResumeView extends React.Component {
                                      displayAddBullets={block.displayAddBullets}
                                      handleUpdateLocalState={this.handleUpdateLocalState} />
                           );
-                        } else {} // define additional block types here
+                        }
           })}
 
-          <img src='styles/assets/ic_playlist_add_black_24px.svg'
+          <img src={require('styles/assets/ic_playlist_add_black_24px.svg')}
                onClick={e => this.addBlock(e, 'bullets')} />
-          <img src='styles/assets/ic_add_circle_outline_black_24px.svg'
+          <img src={require('styles/assets/ic_add_circle_outline_black_24px.svg')}
                onClick={e => this.addBlock(e, 'no bullets')} />
 
-          <ResumeFooter {...this.props}
-                        styles={styles}
-                        resumeThemes={resumeThemes}
-                        handleUpdateLocalState={this.handleUpdateLocalState} />
+
 
           <div className='marginBottom'
                style={styles.marginBottom} />
@@ -316,8 +354,15 @@ class ResumeView extends React.Component {
         </Paper>
 
       </div>
+      </div>
     );
   }
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(ResumeView);
+
+// YE OLDE FOOTER:
+// <ResumeFooter {...this.props}
+//               styles={styles}
+//               resumeThemes={resumeThemes}
+//               handleUpdateLocalState={this.handleUpdateLocalState} />

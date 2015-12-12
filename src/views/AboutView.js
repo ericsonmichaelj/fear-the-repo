@@ -30,6 +30,7 @@ class AboutView extends React.Component {
 
           <div style={styles.teamCard}>
             <Paper zDepth={styles.teamCardDepth}>
+              <a href='http://github.com/AndrewTHuang'>
                 <img src={require('styles/assets/Andrew-balloon-square.jpg')}
                      style={styles.teamImg} />
                 <span style={styles.teamMemberName}>

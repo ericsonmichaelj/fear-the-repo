@@ -1,6 +1,9 @@
 import { createReducer } from '../utils';
 import Immutable from 'immutable';
 import _ from 'underscore';
+import { dummyResume,
+         blankBulletBlock,
+         blankNoBulletBlock } from 'utils/dummyResume';
 
 import { ADD_BLOCK,
          ADD_BULLET,
@@ -9,6 +12,8 @@ import { ADD_BLOCK,
          HIDE_BULLET,
          MOVE_BLOCK,
          MOVE_BULLET,
+         POPULATE_DATA_FROM_LINKEDIN, 
+         RESET_RESUME,
          SERVER_IS_SAVING_UPDATE,
          UPDATE_LOCAL_STATE,
          UPDATE_LOCAL_STATE_BLOCKS,
@@ -16,151 +21,25 @@ import { ADD_BLOCK,
          UPDATE_LOCAL_STATE_FOOTER,
          UPDATE_LOCAL_STATE_HEADER,
          UPDATE_LOCAL_STATE_SAVEPRINT,
-         UPDATE_RESUME_WITH_SERVER_RESPONSE } from 'constants/resumeConstants';
+         UPDATE_RESUME_WITH_SERVER_RESPONSE,
+         UPDATE_THESAURUS_RESULTS,
+         WORD_SEARCH } from 'constants/resumeConstants';
 
 
 // resumeState.resumeTitle is what the front end sees; req.body.resumeTitle is what the server sees.
-const initialState = {
-  resumeId: 1,
-  resumeTitle: 'Resume Version Name',
-  resumeTheme: 'Default',
-  serverIsSaving: 'no',
-  clientFormIsDirty: false,
-  resumeHeader: {
-    name: 'Full Name',
-    profession: 'Profession',
-    city: 'City',
-    state: 'State',
-    displayEmail: 'email@email.com',
-    phone: '(124) 125-4737',
-    webLinkedin: 'linkedin.com/myname',
-    webOther: 'github.com/number23'
-  },
-  blockChildren: [{
-    blockType: 'bullets',
-    blockId: 1,
-    blockType: 'bullets',
-    archived: false,
-    companyName: 'Company Name',
-    jobTitle: 'Bossman',
-    years: '2015',
-    location: 'San Francisco, CA',
-    bulletChildren: [{
-      bulletId: 1,
-      archived: false,
-      parentBlockId: 1,
-      text: 'My first bullet'
-    }, {
-      bulletId: 2,
-      archived: false,
-      parentBlockId: 1,
-      text: 'Then I productionalized everything, like the Bossman that I am.'
-    }]
-  }, {
-    blockId: 2,
-    blockType: 'bullets',
-    archived: false,
-    companyName: 'Second Corp.',
-    jobTitle: 'Lackey',
-    years: '2014, 2013',
-    location: 'San Francisco, CA',
-    bulletChildren: [{
-      bulletId: 3,
-      archived: false,
-      parentBlockId: 2,
-      text: 'I believe in sentences that end with punctuation'
-    }, {
-      bulletId: 4,
-      archived: false,
-      parentBlockId: 2,
-      text: 'This is an inflexible belief.'
-    }]
-  }, {
-    blockId: 3,
-    blockType: 'bullets',
-    archived: false,
-    companyName: 'Third Chance',
-    jobTitle: 'Intern',
-    years: '2012-2011',
-    location: 'San Francisco, CA',
-    bulletChildren: [{
-      bulletId: 5,
-      archived: false,
-      parentBlockId: 3,
-      text: 'Not a great life here, alas.'
-    }, {
-      bulletId: 6,
-      archived: false,
-      parentBlockId: 3,
-      text: 'But I played with a lot of paperclips!'
-    }]
-  }],
-  resumeFooter: {
-    school1: {
-      name: 'School Name',
-      degree: 'Degree',
-      schoolEndYear: 'Year',
-      location: 'City'
-    },
-    school2: {
-      name: 'School Name',
-      degree: 'Degree',
-      schoolEndYear: 'Year',
-      location: 'City'
-    },
-    personalStatement: 'Personal Statement / Hobbies'
-  }
-};
+const initialState = dummyResume;
 
 export default createReducer(initialState, {
 
   [ADD_BLOCK]: (state, payload) => {
     const newState = { ...state };
-    const blockId = Date.now();
-    const bulletId = Date.now() + 1;
     let newBlock;
 
     if (payload === 'bullets') {
-      newBlock = {
-        blockId: blockId,
-        blockType: 'bullets',
-        archived: false,
-        companyName: 'Company/Project/School Name',
-        jobTitle: 'Job Title / Project Role / Degree',
-        years: 'StartYear - EndYear, if applicable',
-        location: 'City, State / Project URL',
-        bulletChildren: [{
-          bulletId: bulletId + 1,
-          archived: false,
-          parentBlockId: blockId,
-          text: 'New bullet'
-        }, {
-          bulletId: bulletId + 2,
-          archived: false,
-          parentBlockId: blockId,
-          text: 'New bullet'
-        }]
-      };
+      newBlock = blankBulletBlock();
     } else if (payload === 'no bullets') {
-      newBlock = {
-        blockId: blockId,
-        blockType: 'no bullets',
-        archived: false,
-        companyName: 'Heading',
-        location: 'text, if applicable',
-        bulletChildren: [{
-          bulletId: bulletId + 1,
-          archived: false,
-          parentBlockId: blockId,
-          text: 'This won\'t be seen'
-        }, {
-          bulletId: bulletId + 2,
-          archived: false,
-          parentBlockId: blockId,
-          text: 'This won\'t be seen'
-        }]
-      };
-    } else {} // define additional block types here
+      newBlock = blankNoBulletBlock();
+    }
 
     newState.blockChildren.push(newBlock);
     return newState;
@@ -220,6 +99,63 @@ export default createReducer(initialState, {
     return newState;
   },
 
+  [POPULATE_DATA_FROM_LINKEDIN]: (state,payload) => {
+
+    if(payload.positions._total){
+      var _companyName  = payload.positions.values[0].company.name || '[company name]';
+      var _jobTitle = payload.positions.values[0].company.title || '[job title]'; 
+      var _text = payload.positions.values[0].summary ||  '[contribution to project]';
+      var _startYear = payload.positions.values[0].startDate.year ||  '[enter start year]';
+      if(payload.positions.values[0].isCurrent) {
+        var _endYear = new Date().getFullYear()
+      } else {
+        var _endYear = payload.positions.values[0].endDate.year || '[enter end year]';       
+      }
+    }else {
+      var _companyName =  '[company name]';
+      var _jobTitle = '[job title]';
+      var _text = '[contribution to project]';
+      var _startYear = '[enter start year]';
+      var _endYear = '[enter end year]';
+    }
+
+
+    const newState = Object.assign({}, state);
+    newState.resumeHeader = {
+        name: (payload.firstName || 'Your') + ' ' + (payload.lastName || 'Full Name'),
+        webLinkedin: payload.publicProfileUrl || 'LinkedIn.com/in/YourLinkedIn',
+        displayEmail: payload.emailAddress || 'LinkedIn.com/in/YourLinkedIn',
+        city: payload.location.name || 'Your City'
+    };
+    newState.blockChildren[2]= {
+        blockId: 3,
+        blockType: 'bullets',
+        archived: false,
+        companyName: _companyName,
+        jobTitle: _jobTitle,
+        bulletChildren: [{
+            bulletId: 105,
+            archived: false,
+            parentBlockId: 3,
+            text: _text
+        }, {
+            bulletId: 106,
+            archived: false,
+            parentBlockId: 3,
+            text: '[contribution to project]'
+        }],
+
+        years: _endYear + '-' + _startYear,
+        location: '[enter location]'
+    };
+    return newState;
+  }, 
+
+
+  [RESET_RESUME]: (state, payload) => {
+    return Object.assign({}, state, dummyResume);
+  },
+
   [SERVER_IS_SAVING_UPDATE]: (state, payload) => {
     const newState = Object.assign({}, state);
     newState.serverIsSaving = payload;
@@ -267,10 +203,33 @@ export default createReducer(initialState, {
     return newState;
   },
 
+  [UPDATE_THESAURUS_RESULTS]: (state, payload) => {
+    return {
+      ...state,
+      thesaurusResults: payload
+    };
+  },
+
   [UPDATE_RESUME_WITH_SERVER_RESPONSE]: (state, payload) => {
     return {
       ...state,
       ...payload
+    };
+  },
+
+  [WORD_SEARCH]: (state, payload) => {
+    const searchResults = _.chain(state.blockChildren)
+                           .map(block => block.bulletChildren)
+                           .flatten()
+                           .filter(bullet => bullet.archived === false)
+                           .map(bullet => bullet.text)
+                           .map(snippet => snippet.toLowerCase().split(' '))
+                           .flatten()
+                           .filter(word => word.indexOf(payload) !== -1)
+                           .value();
+    return {
+      ...state,
+      wordCount: searchResults.length
     };
   }
 

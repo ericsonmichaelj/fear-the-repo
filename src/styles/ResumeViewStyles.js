@@ -19,38 +19,44 @@ export const styles = {
     fontFamily: font
   },
   themeSelectDropdown: {
-    backgroundColor: MasterTheme.lightGray,
+    backgroundColor: MasterTheme.white,
     fontFamily: font,
-    marginLeft: '80px',
-    float: 'left',
-    paddingTop: '0'
+    paddingTop: '0',
+    display: 'block'
   },
   menuItemStyle: {
     color: MasterTheme.orange,
     fontWeight: MasterTheme.light
   },
   resumeTitle: {
-    textAlign: 'center',
-    marginLeft: '50px',
-    display: 'inline-block',
-    backgroundColor: MasterTheme.lightGray
+    display: 'block',
+    backgroundColor: MasterTheme.white
   },
   buttonLabelStyle: {
     textTransform: 'none'
   },
-  saveButton: {
-    margin: '5px',
-    float: 'right',
-    marginRight: '15px',
-    marginTop: '30px',
-    marginBottom: '0'
+  leftNav: {
+    paddingTop: '58px',
+    width: '150px'
   },
-  printButton: {
+  paperLeftNavButton: {
+    marginTop: '30px'
+  },
+  paperLeftNavThemeButton: {
+
+  },
+  paperLeftNavLabel: {
+    color: MasterTheme.orange,
+    font: font,
+    marginBottom: '10px'
+  },
+  exportButton: {
     margin: '5px',
     float: 'right',
-    marginTop: '30px',
+    marginTop: '40px',
     marginBottom: '0',
-    marginRight: '20px'
+    marginRight: '17px',
+    padding: '0 0px'
   },
   textCenter: {
     margin: '20px',
@@ -86,12 +92,23 @@ export const styles = {
   },
   hintStyle: {
     color: MasterTheme.lightGray,
-    paddingLeft: '8px'
+    paddingLeft: '20px',
+    border: 'solid',
+    borderColor: MasterTheme.orange,
+    borderRadius: '6px',
+    padding: '10px'
   },
   floatingLabelStyle: {
     color: MasterTheme.orange,
     fontFamily: font,
     fontWeight: MasterTheme.light
+  },
+  errorMessageStyle: {
+    color: MasterTheme.orange,
+    fontFamily: font,
+    fontWeight: MasterTheme.bold,
+    textAlign: 'center',
+    marginTop: '10px'
   },
   bulletContainer: {
     width: '95%'
@@ -99,5 +116,42 @@ export const styles = {
   bullet: {
     fontSize: '16px',
     marginTop: '10px'
+  },
+  editorField: {
+    cursor: 'text',
+    // maxWidth: '90%',
+    // minWidth: '80%',
+    display: 'inline-block'
+  },
+  handle: {
+    cursor: 'move',
+    float: 'right',
+  },
+  thesaurusResults: {
+    color: MasterTheme.black,
+    paddingTop: '5px'
+  },
+  wordCount: {
+    color: MasterTheme.lightGray
+  },
+  wordList: {
+    color: MasterTheme.darkGray,
+    textAlign: 'left'
+  },
+  wordType: {
+    color: MasterTheme.orange,
+    fontStyle: 'italic'
   }
+  // ,
+  // leftNav: {
+  //   marginTop: '65px',
+  //   paddingTop: '200px'
+    // position: 'fixed',
+    // zIndex: 10,
+    // top: 0,
+    // transform: 'translate3d(' + x + 'px, 0, 0)',
+    // transition: !this.state.swiping && _stylesTransitions2['default'].easeOut(),
+    // backgroundColor: this.getTheme().color,
+    // overflow: 'hidden'
+  // }
 };
