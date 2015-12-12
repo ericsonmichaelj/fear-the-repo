@@ -33,9 +33,9 @@ const config = {
     'history',
     'react',
     'react-dnd',
-    'react-medium-editor'
-    'radium'
-    'material-ui'
+    'react-medium-editor',
+    'radium',
+    'material-ui',
     'react-dnd-html-backend',
     'jQuery',
     'underscore',
